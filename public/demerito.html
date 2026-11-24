@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es" dir="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Deméritos - Sistema Escolar</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
+    
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --danger-color: #e74c3c;
+            --success-color: #27ae60;
+            --light-bg: #f8f9fa;
+            --white: #ffffff;
+        }
+
+        * { box-sizing: border-board; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            color: #333333;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        nav {
+            background-color: var(--primary-color);
+            padding: 1rem;
+            text-align: center;
+        }
+
+        nav h1 { color: var(--white); font-size: 1.3rem; }
+
+        .btn {
+            display: inline-block;
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s, transform 0.2s;
+            margin: 0.2rem;
+        }
+
+        .btn-primary { background-color: var(--primary-color); color: var(--white); }
+        .btn-primary:hover { background-color: #1a252f; }
+        .btn-secondary { background-color: var(--secondary-color); color: var(--white); }
+        .btn-success { background-color: var(--success-color); color: var(--white); }
+        .btn-danger { background-color: var(--danger-color); color: var(--white); }
+
+        .form-container { max-width: 800px; margin: 2rem auto; padding: 2rem; background: var(--white); border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--primary-color); }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.7rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; transition: border-color 0.3s; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--secondary-color); }
+        .form-group textarea { min-height: 100px; resize: vertical; }
+
+        .table-container { margin-top: 2rem; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        th, td { padding: 0.8rem; text-align: left; border-bottom: 1px solid #eee; }
+        th { background-color: var(--primary-color); color: var(--white); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        tr:nth-child(even) { background-color: rgba(44, 62, 80, 0.03); }
+        tr:hover { background-color: rgba(44, 62, 80, 0.05); }
+
+        .empty-state { text-align: center; padding: 3rem 1rem; color: #888; }
+
+        @media (max-width: 480px) { th, td { padding: 0.5rem; font-size: 0.8rem; } }
+    </style>
+</head>
+<body>
+    <nav>
+        <h1>Sistema de Meritos Escolares</h1>
+    </nav>
+
+    <main>
+        <div class="form-container">
+            <!-- Demerito Registration Form -->
+            <div style="background: var(--primary-color); color: white; padding: 1rem; margin: -1rem -1rem 1rem -1rem;">
+                <h1><span style="font-size: 1.3rem;">📋</span>Registro de Deméritos</h1>
+            </div>
+
+            <form id="demeritoForm">
+                <div class="form-group">
+                    <label for="fecha">Fecha</label>
+                    <input type="date" id="fecha" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="nombre-alumno">Nombre del Alumno</label>
+                    <input type="text" id="nombre-alumno" placeholder="Ej: María López" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="nie-alumno">NIE (Número de Identificación)</label>
+                    <input type="text" id="nie-alumno" placeholder="Ej: X-12345678" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="tipo-demerito">Tipo de Demérito o Castigo</label>
+                    <select id="tipo-demerito" required>
+                        <option value="" disabled selected>Seleccione un tipo...</option>
+                        <option value="A">A - Llegada tardía</option>
+                        <option value="B">B - Falta de tarea</option>
+                        <option value="C">C - Comportamiento inapropiado</option>
+                        <option value="D">D - Falta de respeto</option>
+                        <option value="E">E - Materiales faltantes</option>
+                        <option value="F">F - Incumplimiento de normas</option>
+                        <option value="G">G - Otros</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="nivel-demerito">Nivel de Gravedad (1-10)</label>
+                    <input type="number" id="nivel-demerito" min="1" max="10" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="descripcion-castigo">Descripción del Castigo</label>
+                    <textarea id="descripcion-castigo" rows="3" placeholder="Descripción detallada del castigo..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="mensaje-padre">Mensaje al Padre</label>
+                    <textarea id="mensaje-padre" rows="3" placeholder="Mensaje específico para los padres..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="profesor-encargado">Profesor Encargado</label>
+                    <input type="text" id="profesor-encargado" placeholder="Nombre del docente" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                    Registrar Demérito
+                </button>
+            </form>
+        </div>
+
+        <!-- Demeritos Registered Table -->
+        <div class="table-wrapper">
+            <h3 style="margin-bottom: 1rem; color: var(--primary-color);">Deméritos Registrados</h3>
+            <div id="demerito-table">
+                <p style="text-align: center; color: var(--text-light); padding: 2rem;">Cargando deméritos...</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Check authentication
+            const statusResp = await fetch('/api/login/status');
+            const statusData = await statusResp.json();
+
+            if (!statusData.loggedIn) {
+                window.location.href = '/';
+            }
+
+            // Load existing demeritos
+            await loadDemeritos();
+
+            // Handle form submission
+            const form = document.getElementById('demeritoForm');
+            if (form) {
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+
+                    const formData = {
+                        fecha: document.getElementById('fecha').value,
+                        nombre_alumno: document.getElementById('nombre-alumno').value.trim(),
+                        nie: document.getElementById('nie-alumno').value.trim(),
+                        tipo_demerito: document.getElementById('tipo-demerito').value,
+                        nivel: parseInt(document.getElementById('nivel-demerito').value),
+                        descripcion: document.getElementById('descripcion-castigo').value.trim(),
+                        mensaje_padre: document.getElementById('mensaje-padre').value.trim(),
+                        profesor_encargado: document.getElementById('profesor-encargado').value.trim()
+                    };
+
+                    // Validation
+                    if (!formData.fecha || !formData.nombre_alumno || !formData.nie ||
+                        !formData.tipo_demerito || !formData.profesor_encargado) {
+                        alert('Por favor complete todos los campos obligatorios.');
+                        return;
+                    }
+
+                    // Send to API
+                    const response = await fetch('/api/demeritos', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        alert('Demerito registrado exitosamente');
+                        form.reset();
+                        loadDemeritos();
+                    } else {
+                        alert('Error al registrar: ' + (result.error || 'unknown error'));
+                    }
+                });
+            }
+
+            // Load function
+            async function loadDemeritos() {
+                const response = await fetch('/api/demeritos');
+                const demeritos = await response.json();
+
+                const table = document.getElementById('demerito-table');
+                if (!table) return;
+
+                if (demeritos.length === 0) {
+                    table.innerHTML = '<p style="text-align:center;">No hay demeritos registrados</p>';
+                    return;
+                }
+
+                table.innerHTML = demeritos.map(d => `
+                    <tr>
+                        <td>${d[1] || '--'}</td> <!-- fecha -->
+                        <td>${d[2] || '--'}</td> <!-- nombre_alumno -->
+                        <td>${d[3] || '--'}</td> <!-- nie -->
+                        <td>${d[4] || '--'}</td> <!-- tipo_demerito -->
+                        <td>${d[5] ? d[5] + '/10' : '--'}</td> <!-- nivel -->
+                        <td>${d[6] ? d[6].substring(0, 30) + (d[6].length > 30 ? '...' : '') : '--'}</td> <!-- descripcion -->
+                        <td>${d[7] || '--'}</td> <!-- mensaje_padre -->
+                        <td>${d[8] || '--'}</td> <!-- profesor_encargado -->
+                    </tr>
+                `).join('');
+            }
+        });
+    </script>
+</body>
+</html>

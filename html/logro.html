@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="es" dir="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logros y Redes Sociales - Sistema Escolar</title>
+    <!-- Link to shared CSS stylesheet -->
+    <link rel="stylesheet" href="../css/style.css">
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
+    
+    <style>
+        /*!
+         * Logro View Specific Styles
+         * Purpose: Interface for student achievements and social media mentions
+         * Extends base styles from css/style.css
+         * Maintains SOLID: Single responsibility for this view's layout
+         */
+
+        /* Page header */
+        .logro-header {
+            background: var(--secondary-color);
+            color: var(--white);
+            padding: 1.5rem;
+            border-radius: 8px 8px 0 0;
+            margin: -1rem -1rem 1rem -1rem;
+        }
+
+        .logro-header h1 {
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logro-header p {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        /* Social message section */
+        .social-message {
+            background: var(--white);
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .social-message h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+
+        .social-message p {
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        /* Copy button inside social message */
+        .social-message .btn {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Alumnos sin meritos section */
+        .alumnos-sin-meritos {
+            background: var(--white);
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .alumnos-sin-meritos h3 {
+            color: var(--danger-color);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .alumnos-sin-meritos ul {
+            list-style: none;
+        }
+
+        .alumnos-sin-meritos li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.95rem;
+        }
+
+        .alumnos-sin-meritos li:last-child {
+            border-bottom: none;
+        }
+
+        /* Alumnos con meritos section */
+        .alumnos-con-meritos {
+            background: var(--white);
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .alumnos-con-meritos h3 {
+            color: var(--success-color);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .alumnos-con-meritos ul {
+            list-style: none;
+        }
+
+        .alumnos-con-meritos li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.95rem;
+        }
+
+        .alumnos-con-meritos li:last-child {
+            border-bottom: none;
+        }
+
+        /* Message to publish section */
+        .mensaje-publicar {
+            background: var(--light-bg);
+            border: 2px solid var(--secondary-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .mensaje-publicar h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        .mensaje-publicar textarea {
+            width: 100%;
+            min-height: 150px;
+            margin-top: 0.8rem;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        /* Action buttons */
+        .acciones-section {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .acciones-section .btn {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-light);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .social-message,
+            .alumnos-sin-meritos,
+            .alumnos-con-meritos,
+            .mensaje-publicar,
+            .acciones-section {
+                margin: 1rem 0;
+            }
+            
+            .acciones-section .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <h1>Sistema de Meritos Escolares</h1>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="view" id="logro-view">
+        <div class="form-container">
+            <!-- Social Media Message Section -->
+            <div class="social-message" id="socialMessageSection">
+                <h3><span style="color: var(--white);">📱</span>Mensaje para Redes Sociales</h3>
+                <p>El sistema identificará automáticamente a los alumnos sin meritos este mes para un reconocimiento especial.</p>
+                
+                <button class="btn btn-secondary" onclick="generarMensajeRedes()">Generar Mensaje</button>
+            </div>
+
+            <!-- Alumnos sin meritos este mes -->
+            <div class="alumnos-sin-meritos" id="alumnosSinMeritosSection">
+                <h3><span style="color: var(--danger-color);">🚫</span>Alumnos Sin Meritos Este Mes</h3>
+                <p>Estos alumnos serán mencionados en redes sociales por su buen comportamiento.</p>
+                <ul id="listaAlumnosSinMeritos">
+                    <!-- Generated by JavaScript -->
+                </ul>
+            </div>
+
+            <!-- Alumnos con meritos este mes -->
+            <div class="alumnos-con-meritos" id="alumnosConMeritosSection">
+                <h3><span style="color: var(--success-color);">✅</span>Alumnos Con Meritos Este Mes</h3>
+                <ul id="listaAlumnosConMeritos">
+                    <!-- Generated by JavaScript -->
+                </ul>
+            </div>
+
+            <!-- Message to Publish -->
+            <div class="mensaje-publicar" id="mensajePublicarSection">
+                <h3><span style="color: var(--primary-color);">📢</span>Mensaje para Publicar en Redes</h3>
+                <textarea id="textareaMensaje" readonly>Generar mensaje primero para ver el contenido...</textarea>
+                <div class="acciones-section">
+                    <button class="btn btn-warning" onclick="copiarMensaje()">Copiar al Portapapeles</button>
+                    <button class="btn btn-primary" onclick="publicarRedesSociales()">Publicar en Redes</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Embedded JavaScript for logro view -->
+    <script>
+        /*!
+         * Logro View JavaScript
+         * Purpose: Process student achievements, identify those without merits,
+         *           and generate social media messages
+         * Single Responsibility: Only logro view logic
+         */
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Sample student data - in a real app, this would come from the database
+            const estudiantes = [
+                { nie: 'NIE-001', nombre: 'Juan García', tieneMerito: true },
+                { nie: 'NIE-002', nombre: 'María López', tieneMerito: false },
+                { nie: 'NIE-003', nombre: 'Carlos Rodríguez', tieneMerito: true },
+                { nie: 'NIE-004', nombre: 'Ana Martínez', tieneMerito: false },
+                { nie: 'NIE-005', nombre: 'Pedro Sánchez', tieneMerito: true },
+                { nie: 'NIE-006', nombre: 'Laura Gómez', tieneMerito: false },
+                { nie: 'NIE-007', nombre: 'Miguel Torres', tieneMerito: true },
+                { nie: 'NIE-008', nombre: 'Sofía Díaz', tieneMerito: false }
+            ];
+
+            // Current month for filtering
+            const hoy = new Date();
+            const mesActual = `${hoy.getFullYear()}-${(hoy.getMonth() + 1).toString().padStart(2, '0')}`;
+
+            // Render alumnos sin meritos
+            function renderAlumnosSinMeritos() {
+                const sinMerito = estudiantes.filter(e => !e.tieneMerito);
+                const lista = document.getElementById('listaAlumnosSinMeritos');
+                
+                if (sinMerito.length === 0) {
+                    lista.innerHTML = '<li>Todos los alumnos tienen al menos un merito este mes.</li>';
+                    return;
+                }
+                
+                lista.innerHTML = sinMerito.map((e, i) => `
+                    <li>
+                        <strong>${e.nombre}</strong> (${e.nie}) - No tiene meritos en ${mesActual}
+                    </li>
+                `).join('');
+            }
+
+            // Render alumnos con meritos
+            function renderAlumnosConMeritos() {
+                const conMerito = estudiantes.filter(e => e.tieneMerito);
+                const lista = document.getElementById('listaAlumnosConMeritos');
+                
+                if (conMerito.length === 0) {
+                    lista.innerHTML = '<li>Ningún alumno tiene meritos este mes.</li>';
+                    return;
+                }
+                
+                lista.innerHTML = conMerito.map((e, i) => `
+                    <li>
+                        <strong>${e.nombre}</strong> (${e.nie}) - Tiene meritos en ${mesActual}
+                    </li>
+                `).join('');
+            }
+
+            // Generate the social media message
+            function generarMensajeRedes() {
+                renderAlumnosSinMeritos();
+                renderAlumnosConMeritos();
+                
+                // Build the message
+                let mensaje = '¡Reconocimiento en Redes Sociales del Colegio!\\n\\n';
+                mensaje += '=== ALUMNOS SIN MERITOS (Reconocimiento Especial) ===\\n\\n';
+                
+                const sinMerito = estudiantes.filter(e => !e.tieneMerito);
+                if (sinMerito.length > 0) {
+                    sinMerito.forEach((e, i) => {
+                        mensaje += `${i + 1}. ${e.nombre} (${e.nie})\\n`;
+                    });
+                } else {
+                    mensaje += 'Ningún alumno sin meritos este mes.\\n';
+                }
+                
+                mensaje += '\\n=== ALUMNOS CON MERITOS ===\\n\\n';
+                
+                const conMerito = estudiantes.filter(e => e.tieneMerito);
+                if (conMerito.length > 0) {
+                    conMerito.forEach((e, i) => {
+                        mensaje += `- ${e.nombre} (${e.nie}): Tiene meritos en ${mesActual}\\n`;
+                    });
+                } else {
+                    mensaje += 'Ningún alumno tiene meritos este mes.\\n';
+                }
+                
+                mensaje += '\\n---';
+                mensaje += '\\nGenerado automáticamente por el Sistema de Meritos Escolares';
+                mensaje += '\\nFecha: ' + hoy.toLocaleDateString('es-ES');
+                
+                // Display in textarea
+                const textarea = document.getElementById('textareaMensaje');
+                textarea.value = mensaje;
+                
+                // Show the section
+                document.getElementById('mensajePublicarSection').style.display = 'block';
+                
+                alert('Mensaje generado exitosamente para redes sociales');
+            }
+
+            // Copy message to clipboard
+            function copiarMensaje() {
+                const textarea = document.getElementById('textareaMensaje');
+                navigator.clipboard.writeText(textarea.value).then(() => {
+                    alert('Mensaje copiado al portapapeles exitosamente');
+                }).catch(err => {
+                    alert('Error al copiar: ' + err);
+                });
+            }
+
+            // Publish to social media (simulated)
+            function publicarRedesSociales() {
+                const mensaje = textarea.value.trim();
+                if (!mensaje) {
+                    alert('No hay mensaje para publicar.');
+                    return;
+                }
+                
+                // Simulate social media posting
+                if (confirm(`¿Desea publicar el siguiente mensaje en las redes sociales del Colegio?\\n\\n${mensaje.substring(0, 100)}...`)) {
+                    // In a real app, this would call an API
+                    alert('¡Publicación exitosa! El mensaje ha sido compartido en las redes sociales oficiales del colegio.');
+                    
+                    // Optionally, mark as published in database
+                    // db.markAsPublished();
+                }
+            }
+
+            // Initialize on load
+            renderAlumnosSinMeritos();
+            renderAlumnosConMeritos();
+        });
+    </script>
+</body>
+</html>

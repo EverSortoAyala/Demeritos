@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es" dir="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Perdon - Sistema Escolar</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
+    
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --success-color: #27ae60;
+            --light-bg: #f8f9fa;
+            --white: #ffffff;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            color: #333333;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        nav {
+            background-color: var(--primary-color);
+            padding: 1rem;
+            text-align: center;
+        }
+
+        nav h1 { color: var(--white); font-size: 1.3rem; }
+
+        /* Form container */
+        .form-container {
+            max-width: 500px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .form-container h2 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        /* Success message */
+        .perdon-success {
+            background-color: var(--success-color);
+            color: var(--white);
+            padding: 1rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+            display: none;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .perdon-success.active { display: block; }
+
+        /* Perdon list */
+        .perdon-list {
+            margin-top: 2rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .perdon-list div {
+            padding: 0.8rem;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9rem;
+        }
+
+        .perdon-list div:last-child { border-bottom: none; }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #888;
+        }
+
+        @media (max-width: 480px) {
+            .form-container { margin: 1rem; padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <h1>Sistema de Meritos Escolares</h1>
+    </nav>
+
+    <main>
+        <div class="form-container">
+            <!-- Perdon Registration Form -->
+            <div style="background: var(--primary-color); color: white; padding: 1rem; margin: -1rem -1rem 1rem -1rem;">
+                <h1><span style="font-size: 1.3rem;">✅</span>Formulario de Perdon</h1>
+            </div>
+
+            <form id="perdonForm">
+                <div class="form-group">
+                    <label for="alumno-nie">NIE del Alumno</label>
+                    <input type="text" id="alumno-nie" placeholder="Ej: X-12345678" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="tarea-perdon">Descripción de la Tarea o Responsabilidad</label>
+                    <textarea id="tarea-perdon" rows="3" placeholder="Describe la tarea que el estudiante completó..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="fecha-perdon">Fecha de Asignación</label>
+                    <input type="date" id="fecha-perdon" required>
+                </div>
+
+                <button type="submit" class="btn btn-success" style="width: 100%; margin-top: 1rem;">
+                    Registrar Perdon
+                </button>
+            </form>
+
+            <!-- Success message -->
+            <div id="perdonSuccess" class="perdon-success" role="alert">
+                Tarea completada y registrada exitosamente.
+            </div>
+
+            <!-- Perdon Records List -->
+            <div class="perdon-list" id="perdonList">
+                <p style="text-align: center; color: #888; padding: 2rem;">Cargando registros...</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Check auth
+            const statusResp = await fetch('/api/login/status');
+            const statusData = await statusResp.json();
+
+            if (!statusData.loggedIn) {
+                window.location.href = '/';
+            }
+
+            // Initialize records
+            let perdonRecords = [];
+
+            // Load existing records
+            const loadRecords = async () => {
+                const response = await fetch('/api/perdon');
+                perdonRecords = await response.json();
+                renderRecords();
+            };
+
+            // Render records function
+            function renderRecords() {
+                const list = document.getElementById('perdonList');
+
+                if (perdonRecords.length === 0) {
+                    list.innerHTML = '<p style="text-align:center;">No hay registros de perdón.</p>';
+                    return;
+                }
+
+                list.innerHTML = perdonRecords.map((p, index) => `
+                    <div>
+                        <strong>NIE:</strong> ${p[1]} &nbsp;|&nbsp;
+                        <strong>Tarea:</strong> ${p[3]} &nbsp;|&nbsp;
+                        <strong>Fecha Asignación:</strong> ${p[4]} &nbsp;|&nbsp;
+                        <strong>Fecha Cumplimiento:</strong> ${p[5] || 'Pendiente'} &nbsp;|&nbsp;
+                        <strong>Estado:</strong> ${p[7] || 'Pendiente'}
+                    </div>
+                `).join('');
+            }
+
+            // Handle form submission
+            const form = document.getElementById('perdonForm');
+            if (form) {
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+
+                    const alumnoNie = document.getElementById('alumno-nie').value.trim();
+                    const tarea = document.getElementById('tarea-perdon').value.trim();
+                    const fecha = document.getElementById('fecha-perdon').value;
+
+                    if (!alumnoNie || !tarea || !fecha) {
+                        alert('Por favor complete todos los campos obligatorios.');
+                        return;
+                    }
+
+                    // Send to API
+                    const response = await fetch('/api/perdon', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ alumno_nie: alumnoNie, tarea, fecha_completado: fecha })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        // Show success
+                        const successDiv = document.getElementById('perdonSuccess');
+                        successDiv.classList.add('active');
+
+                        // Reset form
+                        form.reset();
+
+                        // Hide success after 3 seconds
+                        setTimeout(() => {
+                            successDiv.classList.remove('active');
+                        }, 3000);
+
+                        // Reload records
+                        loadRecords();
+                    } else {
+                        alert('Error al registrar: ' + (result.error || 'unknown'));
+                    }
+                });
+            }
+
+            // Initialize
+            loadRecords();
+        });
+    </script>
+</body>
+</html>

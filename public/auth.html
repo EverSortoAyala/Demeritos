@@ -1,0 +1,330 @@
+/*!
+ * auth.html - Pantalla de Autenticación (Login y Registro)
+ * Purpose: Onboarding flow - first time register, then login
+ * Uses Express sessions for auth state
+ * Mobile-first responsive design
+ */
+
+<!DOCTYPE html>
+<html lang="es" dir="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Meritos Escolares - Acceso</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
+    
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --light-bg: #f8f9fa;
+            --white: #ffffff;
+            --max-width: 420px;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            color: #333333;
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .auth-card {
+            background: var(--white);
+            padding: 2.5rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: var(--max-width);
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .auth-card h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--primary-color);
+        }
+
+        .auth-card p {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+        }
+
+        .form-group input::placeholder { color: #999; }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 0.5rem 0;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+
+        .btn-primary:hover { background-color: #1a252f; transform: translateY(-2px); }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: var(--white);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: var(--white);
+        }
+
+        .links {
+            margin-top: 1rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .links a {
+            color: var(--primary-color);
+            text-decoration: none;
+            margin: 0 0.5rem;
+        }
+
+        .links a:hover { text-decoration: underline; }
+
+        .error-msg {
+            background: #fdf2f2;
+            color: #e74c3c;
+            padding: 0.8rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            display: none;
+            text-align: center;
+        }
+
+        .error-msg.active { display: block; }
+
+        .divider {
+            text-align: center;
+            margin: 1.5rem 0;
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        .divider span {
+            background: var(--light-bg);
+            padding: 0 1rem;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .auth-card { animation: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-card" id="authCard">
+        <h2>Sistema de Meritos Escolares</h2>
+        
+        <!-- Error message -->
+        <div class="error-msg" id="errorMsg">
+            Por favor corrija los campos indicados.
+        </div>
+
+        <!-- Register Form (First time) -->
+        <div id="registerForm">
+            <h3>Crear Cuenta</h3>
+            
+            <div class="form-group">
+                <label for="regUsername">Nombre de Usuario</label>
+                <input type="text" id="regUsername" placeholder="Ej: admin o tu nombre" required>
+            </div>
+
+            <div class="form-group">
+                <label for="regPassword">Contraseña</label>
+                <input type="password" id="regPassword" placeholder="Mínimo 4 caracteres" required>
+            </div>
+
+            <div class="form-group">
+                <label for="regPasswordConfirm">Confirmar Contraseña</label>
+                <input type="password" id="regPasswordConfirm" placeholder="Repita la contraseña" required>
+            </div>
+
+            <button class="btn btn-primary" onclick="registrarUsuario()">Registrar Cuenta</button>
+
+            <div class="divider">¿Ya tienes cuenta?</div>
+            <div class="links">
+                <a href="#" onclick="mostrarLogin(); return false;">Ingresar aquí</a>
+            </div>
+        </div>
+
+        <!-- Login Form -->
+        <div id="loginForm" style="display: none;">
+            <h3>Iniciar Sesión</h3>
+            
+            <p>Ingresa con los datos que registró.</p>
+
+            <div class="form-group">
+                <label for="loginUsername">Nombre de Usuario</label>
+                <input type="text" id="loginUsername" placeholder="Tu nombre de usuario" required>
+            </div>
+
+            <div class="form-group">
+                <label for="loginPassword">Contraseña</label>
+                <input type="password" id="loginPassword" placeholder="Tu contraseña" required>
+            </div>
+
+            <button class="btn btn-primary" onclick="iniciarSesion()">Ingresar al Sistema</button>
+
+            <div class="divider">¿No tienes cuenta?</div>
+            <div class="links">
+                <a href="#" onclick="mostrarRegistro(); return false;">Regístrate primero</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global functions for toggling forms
+        window.mostrarRegistro = function() {
+            document.getElementById('registerForm').style.display = 'block';
+            document.getElementById('loginForm').style.display = 'none';
+        };
+
+        window.mostrarLogin = function() {
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+        };
+
+        // Register user via API
+        async function registrarUsuario() {
+            const username = document.getElementById('regUsername').value.trim();
+            const password = document.getElementById('regPassword').value.trim();
+            const passwordConfirm = document.getElementById('regPasswordConfirm').value.trim();
+
+            if (!username || !password || !passwordConfirm) {
+                showError('Todos los campos son requeridos');
+                return;
+            }
+
+            if (password.length < 4) {
+                showError('La contraseña debe tener al menos 4 caracteres');
+                return;
+            }
+
+            if (password !== passwordConfirm) {
+                showError('Las contraseñas no coinciden');
+                return;
+            }
+
+            // Call API
+            const response = await fetch('/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Auto-login after registration
+                loginUser(username, password);
+            } else {
+                showError(data.error || 'Error al registrar');
+            }
+        }
+
+        // Login user
+        async function iniciarSesion() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+
+            if (!username || !password) {
+                showError('Usuario y contraseña requeridos');
+                return;
+            }
+
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Redirect to main view
+                window.location.href = '/demerito';
+            } else {
+                showError(data.error || 'Usuario o contraseña incorrectos');
+            }
+        }
+
+        // Show error message
+        function showError(message) {
+            const el = document.getElementById('errorMsg');
+            el.textContent = message;
+            el.classList.add('active');
+            setTimeout(() => el.classList.remove('active'), 5000);
+        }
+
+        // Initialize: show register form by default if no user logged in
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if already logged in (via session)
+            fetch('/api/login/status')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.loggedIn) {
+                        window.location.href = '/demerito';
+                    } else {
+                        // Show register form first time
+                        mostrarRegistro();
+                    }
+                });
+        });
+    </script>
+</body>
+</html>

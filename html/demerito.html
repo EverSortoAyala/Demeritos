@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="es" dir="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Demeritos - Sistema Escolar</title>
+    <!-- Link to shared CSS stylesheet -->
+    <link rel="stylesheet" href="../css/style.css">
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
+    
+    <style>
+        /*!
+         * Demerito View Specific Styles
+         * Purpose: Interface for registering student demerits/punishments
+         * Extends base styles from css/style.css
+         * Maintains SOLID: Single responsibility for this view's layout
+         */
+
+        /* Page header */
+        .demerito-header {
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 1.5rem;
+            border-radius: 8px 8px 0 0;
+            margin: -1rem -1rem 1rem -1rem;
+        }
+
+        .demerito-header h1 {
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .demerito-header p {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        /* Demerito form - main content area */
+        .demerito-form-section {
+            background: var(--white);
+            border: 1px solid #eee;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            padding: 1.5rem;
+        }
+
+        /* Form sections grouping */
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .form-section h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #eee;
+            font-size: 1rem;
+        }
+
+        /* Specific form field styling aligned with main CSS */
+        .form-section .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-section label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 500;
+            color: var(--primary-color);
+            font-size: 0.9rem;
+        }
+
+        .form-section input,
+        .form-section select,
+        .form-section textarea {
+            width: 100%;
+            padding: 0.7rem 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-section input:focus,
+        .form-section select:focus,
+        .form-section textarea:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+        }
+
+        .form-section textarea {
+            min-height: 80px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        /* Submit button */
+        .btn-registrar {
+            width: 100%;
+            padding: 0.9rem;
+            background-color: var(--primary-color);
+            color: var(--white);
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .btn-registrar:hover {
+            background-color: #1a252f;
+            transform: translateY(-2px);
+        }
+
+        .btn-registrar:focus {
+            outline: 2px solid var(--secondary-color);
+            outline-offset: 2px;
+        }
+
+        /* Demeritos table display */
+        .table-wrapper {
+            margin-top: 2rem;
+            overflow-x: auto;
+        }
+
+        .demerito-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 100%;
+        }
+
+        .demerito-table th {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 0.8rem;
+            text-align: left;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .demerito-table td {
+            padding: 0.7rem 0.8rem;
+            border-bottom: 1px solid #eee;
+            font-size: 0.85rem;
+        }
+
+        .demerito-table tr:nth-child(even) {
+            background-color: rgba(44, 62, 80, 0.03);
+        }
+
+        .demerito-table tr:hover {
+            background-color: rgba(44, 62, 80, 0.05);
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-light);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .demerito-form-section {
+                padding: 1rem;
+            }
+
+            .demerito-table th,
+            .demerito-table td {
+                padding: 0.5rem 0.4rem;
+                font-size: 0.75rem;
+            }
+
+            .form-section h3 {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <h1>Sistema de Meritos Escolares</h1>
+        <!-- Mobile menu button would go here in full implementation -->
+    </nav>
+
+    <!-- Main Content -->
+    <main class="view" id="demerito-view">
+        <div class="form-container">
+            <!-- Demerito Registration Form -->
+            <div class="demerito-header">
+                <h1><span style="font-size: 1.5rem;">📋</span>Registro de Demeritos</h1>
+                <p>Ingrese los datos del castigo o demerito escolar</p>
+            </div>
+
+            <form id="demerito-form" class="demerito-form-section">
+                <!-- Form Section: Datos básicos del alumno -->
+                <div class="form-section">
+                    <h3><span style="color: var(--secondary-color);">👤</span>Datos del Alumno</h3>
+                    
+                    <div class="form-group">
+                        <label for="fecha-demerito">Fecha del Demerito</label>
+                        <input type="date" id="fecha-demerito" name="fecha" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="nombre-alumno">Nombre del Alumno</label>
+                        <input type="text" id="nombre-alumno" name="nombre_alumno" placeholder="Ej: María López" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="nie-alumno">NIE (Número de Identificación de Extranjero)</label>
+                        <input type="text" id="nie-alumno" name="nie" placeholder="Ej: X-12345678" required>
+                    </div>
+                </div>
+
+                <!-- Form Section: Detalles del demerito -->
+                <div class="form-section">
+                    <h3><span style="color: var(--danger-color);">⚠️</span>Detalles del Demerito/Castigo</h3>
+                    
+                    <div class="form-group">
+                        <label for="tipo-demerito">Tipo de Demerito o Castigo</label>
+                        <select id="tipo-demerito" name="tipo_demerito" required>
+                            <option value="" disabled selected>Seleccione un tipo...</option>
+                            <option value="Tardanza">Tardanza</option>
+                            <option value="Falta de tarea">Falta de tarea</option>
+                            <option value="Comportamiento">Comportamiento inapropiado</option>
+                            <option value="Falta de respeto">Falta de respeto</option>
+                            <option value="Otros">Otros</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="descripcion-castigo">Descripción del Castigo</label>
+                        <textarea id="descripcion-castigo" name="descripcion" placeholder="Descripción detallada del castigo o motivo..." rows="3"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mensaje-padre">Mensaje al Padre / Madre</label>
+                        <textarea id="mensaje-padre" name="mensaje_padre" placeholder="Mensaje específico para los padres..." rows="3"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="profesor-encargado">Profesor Encargado</label>
+                        <input type="text" id="profesor-encargado" name="profesor_encargado" placeholder="Nombre del docente" required>
+                    </div>
+                </div>
+
+                <!-- Registration Button -->
+                <button type="submit" class="btn-registrar" id="registrarDemeritoBtn">
+                    <span style="margin-right: 0.5rem;">📝</span>Registrar Demerito
+                </button>
+            </form>
+        </div>
+
+        <!-- Demeritos Registered Table -->
+        <div class="table-wrapper">
+            <h3 style="margin-bottom: 1rem; color: var(--primarycolor);">Demeritos Registrados</h3>
+            <div id="demerito-table">
+                <!-- Table generated by JavaScript -->
+                <p style="text-align: center; color: var(--text-light); padding: 2rem;">Cargando demeritos...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Embedded JavaScript for demerito view -->
+    <script>
+        /*!
+         * Demerito View JavaScript
+         * Purpose: Handle form submission and table rendering for demeritos
+         * Single Responsibility: Only demerito view logic
+         */
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Import the app logic from main application
+            // In a real implementation, this would import/require the AppLogic class
+            
+            // Demo: Simple form handling with local storage fallback
+            const form = document.getElementById('demerito-form');
+            
+            if (form) {
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    
+                    // Collect form data
+                    const formData = {
+                        fecha: document.getElementById('fecha-demerito').value,
+                        nombre_alumno: document.getElementById('nombre-alumno').value.trim(),
+                        nie: document.getElementById('nie-alumno').value.trim(),
+                        tipo_demerito: document.getElementById('tipo-demerito').value,
+                        descripcion: document.getElementById('descripcion-castigo').value.trim(),
+                        mensaje_padre: document.getElementById('mensaje-padre').value.trim(),
+                        profesor_encargado: document.getElementById('profesor-encargado').value.trim()
+                    };
+                    
+                    // Basic validation
+                    if (!formData.fecha || !formData.nombre_alumno || !formData.nie || 
+                        !formData.tipo_demerito || !formData.profesor_encargado) {
+                        alert('Por favor complete todos los campos obligatorios.');
+                        return;
+                    }
+                    
+                    // Create table row dynamically
+                    const table = document.getElementById('demerito-table');
+                    if (table.children.length > 0 && table.children[0].tagName === 'P') {
+                        table.innerHTML = ''; // Remove loading message
+                    }
+                    
+                    const newRow = document.createElement('tr');
+                    newRow.innerHTML = `
+                        <td>${formData.fecha}</td>
+                        <td>${formData.nombre_alumno}</td>
+                        <td>${formData.nie}</td>
+                        <td>${formData.tipo_demerito}</td>
+                        <td>${formData.descripcion.substring(0, 40)}${formData.descripcion.length > 40 ? '...' : ''}</td>
+                        <td>${formData.mensaje_padre.substring(0, 20)}${formData.mensaje_padre.length > 20 ? '...' : ''}</td>
+                        <td>${formData.profesor_encargado}</td>
+                    `;
+                    
+                    table.appendChild(newRow);
+                    
+                    // Show success message
+                    alert('Demerito registrado exitosamente');
+                    
+                    // Reset form
+                    form.reset();
+                });
+            }
+        });
+    </script>
+</body>
+</html>

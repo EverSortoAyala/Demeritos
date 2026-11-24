@@ -1,0 +1,39 @@
+# Dependencias
+node_modules/
+
+# Archivos de entorno (nunca commitear credenciales)
+.env
+
+# Archivos de SQLite (si fueron usados anteriormente)
+*.sqlite
+*.db
+
+# Archivos de log
+*.log
+logs/
+
+# Archivos de construcción (si hay algún build setup)
+/dist
+/build
+
+# Archivos Excel temporales o de backup (mantener escuela.xlsx fuera si es posible)
+# Pero school.xlsx puede necesitarse para rollback, así que comentado:
+# escuela.xlsx
+
+# Archivos del sistema del SO
+.DS_Store
+Thumbs.db
+
+# Configuración del servidor (puerto, etc.)
+*.pid
+
+# Configuración Neon específica (a menos que quieras compartir la URL)
+# neon-config.json
+
+# Temporales de nodo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Archivos generados por el usuario
+/data
